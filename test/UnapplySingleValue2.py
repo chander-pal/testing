@@ -34,8 +34,10 @@
 
 # PySpark equivalent provided by GPT:
 from pyspark.sql import SparkSession
+from typing import TypeVar
 
-spark = SparkSession.builder.appName("UnapplySingleValue2").getOrCreate()
+K = TypeVar('K')
+V = TypeVar('V')
 
 class JHashMapWrapper:
     def __init__(self, jmap):
@@ -53,24 +55,22 @@ class JHashSetWrapper:
         self.jset = jset
 
     @staticmethod
-    def unapply(set):
-        jset = set.copy()
+    def unapply(s):
+        jset = set(s)
         return JHashSetWrapper(jset)
 
 map = {"one": 1, "two": 2}
 set = set(map.keys())
 
 # Works:
-jmap = JHashMapWrapper.unapply(map).jmap
-jset = JHashSetWrapper.unapply(set).jset
+if isinstance(map, dict):
+    jmap = JHashMapWrapper.unapply(map).jmap
+if isinstance(set, set):
+    jset = JHashSetWrapper.unapply(set).jset
 
 # This fails to compile because there are _two_ possible returned values.
-result = []
 for x in [map, set]:
     if isinstance(x, dict):
-        result.append(JHashMapWrapper.unapply(x).jmap)
-    else:
-        result.append(JHashSetWrapper.unapply(x).jset)
-
-for r in result:
-    print(r)
+        jmap = JHashMapWrapper.unapply(x).jmap
+    if isinstance(x, set):
+        jset = JHashSetWrapper.unapply(x).jset
