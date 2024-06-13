@@ -1,0 +1,3 @@
+.venv
+.pytest_cache
+plsql_to_pyspark/.pytest_cache
