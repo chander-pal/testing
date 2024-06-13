@@ -2,7 +2,7 @@
 
 import pytest
 from pyspark.sql import SparkSession
-from src.main.pyspark.simple_redaction import simple_redaction
+from main.pyspark.simple_redaction import simple_redaction
 
 
 @pytest.fixture(scope="session")

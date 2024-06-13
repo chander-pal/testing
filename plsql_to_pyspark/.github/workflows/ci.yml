@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Install Requirements
+        run: |
+          pip install poetry
+          poetry lock &&
+          poetry install
+
+      - name: Set PYTHONPATH and JAVA_HOME and print them
+        run: |
+          echo "PYTHONPATH=$(PWD)/src" >> $GITHUB_ENV
+          echo "PYTHONPATH is: $(PWD)/src"
+          echo "JAVA_HOME is: $JAVA_HOME"
+
+      - name: Run tests
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+        run: poetry run pytest src/test/pyspark/
+
+      - name: Check for running Docker containers
+        id: check_docker
+        run: |
+          if [ "$(docker ps -q)" ]; then
+            echo "containers_exist=true" >> $GITHUB_ENV
+          else
+            echo "containers_exist=false" >> $GITHUB_ENV
+          fi
+
+      - name: Docker system prune on failure or if containers exist
+        if: failure() || env.containers_exist == 'true'
+        run: |
+          docker system prune -f -a

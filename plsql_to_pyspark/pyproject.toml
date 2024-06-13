@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "plsql-test"
+version = "0.1.0"
+description = "plsql-test"
+authors = ["Chander Pal <chander@onebyzero.ai>"]
+packages = [
+    { include = "main", from = "src" },
+    { include = "test", from = "src" },
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<=3.13"
+pyspark = "3.2.0"
+pytest = "6.2.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
