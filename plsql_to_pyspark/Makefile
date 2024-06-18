@@ -22,4 +22,4 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 
 ci:
-	act -W plsql_to_pyspark/.github/workflows/ci.yml
+	act -W .github/workflows/ci.yml
